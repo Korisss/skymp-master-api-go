@@ -15,5 +15,5 @@
 # vendor/
 
 # GoLand settings ignore
-./.idea
+.idea
 *.env

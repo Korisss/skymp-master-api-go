@@ -39,13 +39,11 @@ func checkUserAccess(ctx *gin.Context) (int, bool) {
 // Returning user name
 func (h *Handler) getUserName(ctx *gin.Context) {
 	id, access := checkUserAccess(ctx)
-
 	if !access {
 		return
 	}
 
 	name, err := h.services.GetUserName(id)
-
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return

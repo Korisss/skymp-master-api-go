@@ -49,7 +49,6 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 	}
 
 	claims, ok := token.Claims.(*tokenClaims)
-
 	if !ok {
 		return 0, errors.New("token claims are not of type *tokenClaims")
 	}
@@ -59,7 +58,6 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 
 func (s *AuthService) GenerateToken(email, password string) (int, string, error) {
 	user, err := s.repo.GetUser(email, generatePasswordHash(password, salt))
-
 	if err != nil {
 		return 0, "", err
 	}
@@ -79,7 +77,6 @@ func (s *AuthService) GenerateToken(email, password string) (int, string, error)
 
 func (s *AuthService) GetUserName(id int) (string, error) {
 	name, err := s.repo.GetUserName(id)
-
 	if err != nil {
 		return "", err
 	}

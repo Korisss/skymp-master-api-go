@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"os"
+	"os/signal"
 	"strconv"
+	"syscall"
 
 	master_api "github.com/Korisss/skymp-master-api-go"
 	"github.com/Korisss/skymp-master-api-go/internal/handler"
@@ -57,8 +60,27 @@ func main() {
 	handlers := handler.NewHandler(services)
 
 	server := new(master_api.Server)
-	if err := server.Run(strconv.Itoa(config.Port), handlers.InitRoutes()); err != nil {
-		logrus.Fatalf("Error occured while running http server: %s", err.Error())
+
+	go func() {
+		if err := server.Run(strconv.Itoa(config.Port), handlers.InitRoutes()); err != nil {
+			logrus.Fatalf("Error occured while running http server: %s", err.Error())
+		}
+	}()
+
+	logrus.Print("SkyMP Master Server started...")
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+	<-quit
+
+	logrus.Print("SkyMP Master Server shutting down...")
+
+	if err := server.Shutdown(context.Background()); err != nil {
+		logrus.Error("error occured on server shutting down: %s", err.Error())
+	}
+
+	if err := db.Close(); err != nil {
+		logrus.Error("error occured on db connection close: %s", err.Error())
 	}
 }
 

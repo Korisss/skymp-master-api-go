@@ -30,7 +30,6 @@ func findUserInSessionsStorage(session playerSession) int {
 // TODO: check id with token match
 func (h *Handler) createSession(ctx *gin.Context) {
 	_, access := checkUserAccess(ctx)
-
 	if !access {
 		return
 	}
@@ -80,7 +79,6 @@ func (h *Handler) getSessionData(ctx *gin.Context) {
 	}
 
 	userId := findUserInSessionsStorage(req)
-
 	if userId == 0 {
 		newErrorResponse(ctx, http.StatusNotFound, "user not found")
 		return

@@ -11,7 +11,32 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var serversList = make([]master_api.SkyMPServer, 0)
+type serversList []master_api.SkyMPServer
+
+func (sl *serversList) searchServerInList(ip string, port int) (int, *master_api.SkyMPServer) {
+	for i := 0; i < len(*sl); i++ {
+		if (*sl)[i].Ip == ip && (*sl)[i].Port == port {
+			return i, &((*sl)[i])
+		}
+	}
+
+	return 0, nil
+}
+
+func (sl *serversList) checkServerTimeout(ip string, port int) {
+	if i, serverInList := sl.searchServerInList(ip, port); serverInList != nil && time.Since(serverInList.UpdatedAt) > 5*time.Second {
+		if len(*sl) <= 1 {
+			*sl = make(serversList, 0)
+		} else if i == len(*sl)-1 {
+			*sl = (*sl)[:len(*sl)-1]
+		} else {
+			(*sl)[i] = (*sl)[len(*sl)-1]
+			*sl = (*sl)[:len(*sl)-1]
+		}
+	}
+}
+
+var servers serversList = make(serversList, 0)
 
 func (h *Handler) addOrUpdateServer(ctx *gin.Context) {
 	var req struct {
@@ -32,7 +57,7 @@ func (h *Handler) addOrUpdateServer(ctx *gin.Context) {
 		return
 	}
 
-	if _, serverInList := searchServerInList(ip, port); serverInList != nil {
+	if _, serverInList := servers.searchServerInList(ip, port); serverInList != nil {
 		serverInList.UpdatedAt = time.Now()
 		return
 	}
@@ -50,40 +75,15 @@ func (h *Handler) addOrUpdateServer(ctx *gin.Context) {
 
 	server := master_api.NewSkyMPServer(ip, port, request.Name, request.MaxPlayers, request.Online)
 
-	serversList = append(serversList, server)
+	servers = append(servers, server)
 
 	go func() {
 		time.Sleep(10 * time.Second)
 
-		checkServerTimeout(ip, port)
+		servers.checkServerTimeout(ip, port)
 	}()
 }
 
-func searchServerInList(ip string, port int) (int, *master_api.SkyMPServer) {
-	for i := 0; i < len(serversList); i++ {
-		if serversList[i].Ip == ip && serversList[i].Port == port {
-			return i, &(serversList[i])
-		}
-	}
-
-	return 0, nil
-}
-
-func checkServerTimeout(ip string, port int) {
-	if i, serverInList := searchServerInList(ip, port); serverInList != nil && time.Since(serverInList.UpdatedAt) > 5*time.Second {
-		if len(serversList) <= 1 {
-			serversList = make([]master_api.SkyMPServer, 0)
-		} else if i == len(serversList)-1 {
-			serversList = serversList[:len(serversList)-1]
-		} else {
-			serversList[i] = serversList[len(serversList)-1]
-			serversList = serversList[:len(serversList)-1]
-		}
-	}
-}
-
 func (h *Handler) getServersList(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, &serversList)
+	ctx.JSON(http.StatusOK, &servers)
 }
-
-func (h *Handler) getSessionData(ctx *gin.Context) {}

@@ -12,28 +12,19 @@ type loginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type userNameRequest struct {
+type requestWithAuth struct {
 	Id int `uri:"id" binding:"required"`
 }
 
 // Returning user name
 func (h *Handler) getUserName(ctx *gin.Context) {
-	ctxId, _ := ctx.Get("id")
-	id := ctxId.(int)
+	id, access := checkUserAccess(ctx)
 
-	var req userNameRequest
-
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+	if !access {
 		return
 	}
 
-	if id != req.Id {
-		newErrorResponse(ctx, http.StatusForbidden, "no access to requested information")
-		return
-	}
-
-	name, err := h.services.GetUserName(req.Id)
+	name, err := h.services.GetUserName(id)
 
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
@@ -84,10 +75,27 @@ func (h *Handler) register(ctx *gin.Context) {
 	})
 }
 
+// TODO: create with verification
 func (h *Handler) resetPassword(ctx *gin.Context) {}
 
-// TODO: check id with token match
-func (h *Handler) createSession(ctx *gin.Context) {}
+func checkUserAccess(ctx *gin.Context) (int, bool) {
+	ctxId, _ := ctx.Get("id")
+	id := ctxId.(int)
+
+	var req requestWithAuth
+
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return id, false
+	}
+
+	if id != req.Id {
+		newErrorResponse(ctx, http.StatusForbidden, "no access to create session for this user")
+		return id, false
+	}
+
+	return id, true
+}
 
 // static async play(ctx: Context | Router.RouterContext): Promise<void> {
 //     const user = (ctx as Record<string, User>).user;

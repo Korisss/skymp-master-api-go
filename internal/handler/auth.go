@@ -51,7 +51,7 @@ func (h *Handler) getUserName(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, map[string]interface{}{
+	ctx.JSON(http.StatusOK, gin.H{
 		"name": name,
 	})
 }
@@ -70,7 +70,7 @@ func (h *Handler) login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, map[string]interface{}{
+	ctx.JSON(http.StatusOK, gin.H{
 		"id":    id,
 		"token": token,
 	})
@@ -100,7 +100,7 @@ func (h *Handler) register(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, map[string]interface{}{
+	ctx.JSON(http.StatusOK, gin.H{
 		"id": id,
 	})
 }

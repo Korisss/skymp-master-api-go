@@ -39,7 +39,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			{
 				address.POST("/", h.addOrUpdateServer)
 
-				address.GET("/session/:session", h.getSessionData)
+				address.GET("/sessions/:session", h.getSessionData)
 			}
 		}
 	}

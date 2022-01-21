@@ -65,7 +65,7 @@ func (h *Handler) addOrUpdateServer(ctx *gin.Context) {
 	var request struct {
 		Name       string `json:"name" binding:"required"`
 		MaxPlayers int    `json:"maxPlayers" binding:"required"`
-		Online     int    `json:"online" binding:"required"`
+		Online     int    `json:"online"` // TODO: use binding:"required"
 	}
 
 	if err := ctx.BindJSON(&request); err != nil {

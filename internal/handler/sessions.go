@@ -66,7 +66,7 @@ func (h *Handler) createSession(ctx *gin.Context) {
 
 	sessionsStorage[req.Id] = session
 
-	ctx.JSON(http.StatusOK, map[string]interface{}{
+	ctx.JSON(http.StatusOK, gin.H{
 		"session": session.Session,
 	})
 }
@@ -86,8 +86,8 @@ func (h *Handler) getSessionData(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, map[string]map[string]interface{}{
-		"user": {
+	ctx.JSON(http.StatusOK, gin.H{
+		"user": gin.H{
 			"id": userId,
 		},
 	})

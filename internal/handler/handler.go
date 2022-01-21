@@ -24,20 +24,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			users.POST("/login", h.login)
 			users.POST("/reset-password", h.resetPassword)
 
-			id := users.Group("/:id")
+			id := users.Group(":id", h.userIdentity)
 			{
-				id.GET("/", h.getUser)
+				id.GET("/", h.getUserName)
 				id.POST("/play/:serverAddress", h.createSession)
-
-				//id.POST("/auth", h.auth)
 			}
 		}
-
-		//gamedata := api.Group("/gamedata")
-		//{
-		//	gamedata.PUT("/:serverAddress")
-		//	gamedata.GET("/:serverAddress")
-		//}
 
 		servers := api.Group("/servers")
 		{
@@ -49,7 +41,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 				session := address.Group("/session")
 				{
-					session.GET("/:session", h.getSessionData)
+					session.GET(":session", h.getSessionData)
 				}
 			}
 		}
@@ -57,3 +49,22 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	return router
 }
+
+// Currently not supported
+//       .post("/users/:id/verify", UserController.verify)
+//       .post("/users/:id/reset-pin", UserController.resetPin)
+//       .get("/enduser-verify/:email/:pin", UserController.verifyEnduser)
+
+// All
+// .post("/users", UserController.createUser)
+// .post("/users/:id/verify", UserController.verify)
+// .post("/users/:id/reset-pin", UserController.resetPin)
+// .post("/users/reset-password", UserController.resetPassword)
+// .post("/users/login", UserController.login)
+// .get("/users/:id", withAuth(), UserController.getUserInfo)
+// .get("/enduser-verify/:email/:pin", UserController.verifyEnduser)
+// .post("/users/:id/play/:serverAddress", withAuth(), UserController.play)
+// .get(
+//   "/servers/:serverAddress/sessions/:session",
+//   UserController.getUserByServerAndSession
+// );

@@ -5,8 +5,12 @@ go 1.17
 require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/jmoiron/sqlx v1.3.4
-	github.com/lib/pq v1.2.0
+	github.com/lib/pq v1.10.4
 )
+
+require github.com/sirupsen/logrus v1.8.1
+
+require github.com/dgrijalva/jwt-go v3.2.0+incompatible
 
 require (
 	github.com/gin-contrib/sse v0.1.0 // indirect

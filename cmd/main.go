@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"os"
+	"strconv"
+
 	master_api "github.com/Korisss/skymp-master-api-go"
 	"github.com/Korisss/skymp-master-api-go/internal/handler"
 	"github.com/Korisss/skymp-master-api-go/internal/repository"
 	"github.com/Korisss/skymp-master-api-go/internal/service"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"io/ioutil"
-	"log"
-	"os"
-	"strconv"
+	"github.com/sirupsen/logrus"
 )
 
 type Config struct {
@@ -28,13 +29,15 @@ type Config struct {
 }
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	config, err := loadConfig()
 	if err != nil {
-		log.Fatalf("failed to load config: %s", err.Error())
+		logrus.Fatalf("failed to load config: %s", err.Error())
 	}
 
 	if err := godotenv.Load(); err != nil {
-		log.Fatalf("error loading env variables: %v", err.Error())
+		logrus.Fatalf("error loading env variables: %v", err.Error())
 	}
 
 	db, err := repository.NewPostgresDB(repository.Config{
@@ -46,7 +49,7 @@ func main() {
 		Password: os.Getenv("DB_PASSWORD"),
 	})
 	if err != nil {
-		log.Fatalf("failed to init db: %s", err.Error())
+		logrus.Fatalf("failed to init db: %s", err.Error())
 	}
 
 	repository := repository.NewRepository(db)
@@ -55,7 +58,7 @@ func main() {
 
 	server := new(master_api.Server)
 	if err := server.Run(strconv.Itoa(config.Port), handlers.InitRoutes()); err != nil {
-		log.Fatalf("Error occured while running http server: %s", err.Error())
+		logrus.Fatalf("Error occured while running http server: %s", err.Error())
 	}
 }
 

@@ -23,5 +23,5 @@ func (server *Server) Run(port string, handler http.Handler) error {
 }
 
 func (server *Server) Shutdown(ctx context.Context) error {
-	return server.Shutdown(ctx)
+	return server.httpServer.Close()
 }

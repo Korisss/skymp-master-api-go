@@ -19,10 +19,18 @@ type userNameRequest struct {
 // Returning user name
 // TODO: check id with token match
 func (h *Handler) getUserName(ctx *gin.Context) {
+	ctxId, _ := ctx.Get("id")
+	id := ctxId.(int)
+
 	var req userNameRequest
 
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if id != req.Id {
+		newErrorResponse(ctx, http.StatusForbidden, "no access to requested information")
 		return
 	}
 

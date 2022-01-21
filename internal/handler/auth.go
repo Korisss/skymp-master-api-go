@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"net/mail"
 
 	master_api "github.com/Korisss/skymp-master-api-go"
 	"github.com/gin-gonic/gin"
@@ -64,6 +65,16 @@ func (h *Handler) register(ctx *gin.Context) {
 		return
 	}
 
+	if _, err := mail.ParseAddress(req.Email); err != nil {
+		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if len(req.Password) < 6 {
+		newErrorResponse(ctx, http.StatusBadRequest, "password must contain at least 6 characters")
+		return
+	}
+
 	id, err := h.services.CreateUser(req)
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
@@ -96,15 +107,3 @@ func checkUserAccess(ctx *gin.Context) (int, bool) {
 
 	return id, true
 }
-
-// static async play(ctx: Context | Router.RouterContext): Promise<void> {
-//     const user = (ctx as Record<string, User>).user;
-//     if (!(await UserController.ensureTokenMatchesId(ctx))) return;
-//     user.currentServerAddress = ctx.params.serverAddress;
-//     user.currentSession = randomString(32);
-//     await UserController.getRepository(ctx).save(user);
-//     ctx.status = 200;
-//     ctx.body = {
-//       session: user.currentSession
-//     };
-//   }

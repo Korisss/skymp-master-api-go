@@ -7,23 +7,26 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type loginInput struct {
+type loginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-// Returning user name
-func (h *Handler) getUserName(ctx *gin.Context) {
-	var input struct {
-		Id int `uri:"id" binding:"required"`
-	}
+type userNameRequest struct {
+	Id int `uri:"id" binding:"required"`
+}
 
-	if err := ctx.ShouldBindUri(&input); err != nil {
+// Returning user name
+// TODO: check id with token match
+func (h *Handler) getUserName(ctx *gin.Context) {
+	var req userNameRequest
+
+	if err := ctx.ShouldBindUri(&req); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	name, err := h.services.GetUserName(input.Id)
+	name, err := h.services.GetUserName(req.Id)
 
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
@@ -36,14 +39,14 @@ func (h *Handler) getUserName(ctx *gin.Context) {
 }
 
 func (h *Handler) login(ctx *gin.Context) {
-	var input loginInput
+	var req loginRequest
 
-	if err := ctx.BindJSON(&input); err != nil {
+	if err := ctx.BindJSON(&req); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	id, token, err := h.services.GenerateToken(input.Email, input.Password)
+	id, token, err := h.services.GenerateToken(req.Email, req.Password)
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
@@ -56,14 +59,14 @@ func (h *Handler) login(ctx *gin.Context) {
 }
 
 func (h *Handler) register(ctx *gin.Context) {
-	var input master_api.User
+	var req master_api.User
 
-	if err := ctx.BindJSON(&input); err != nil {
+	if err := ctx.BindJSON(&req); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	id, err := h.services.CreateUser(input)
+	id, err := h.services.CreateUser(req)
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
@@ -76,4 +79,17 @@ func (h *Handler) register(ctx *gin.Context) {
 
 func (h *Handler) resetPassword(ctx *gin.Context) {}
 
+// TODO: check id with token match
 func (h *Handler) createSession(ctx *gin.Context) {}
+
+// static async play(ctx: Context | Router.RouterContext): Promise<void> {
+//     const user = (ctx as Record<string, User>).user;
+//     if (!(await UserController.ensureTokenMatchesId(ctx))) return;
+//     user.currentServerAddress = ctx.params.serverAddress;
+//     user.currentSession = randomString(32);
+//     await UserController.getRepository(ctx).save(user);
+//     ctx.status = 200;
+//     ctx.body = {
+//       session: user.currentSession
+//     };
+//   }

@@ -8,8 +8,8 @@ import (
 )
 
 type loginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type userNameRequest struct {
@@ -17,7 +17,6 @@ type userNameRequest struct {
 }
 
 // Returning user name
-// TODO: check id with token match
 func (h *Handler) getUserName(ctx *gin.Context) {
 	ctxId, _ := ctx.Get("id")
 	id := ctxId.(int)

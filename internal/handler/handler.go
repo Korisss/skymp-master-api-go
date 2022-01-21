@@ -35,14 +35,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			servers.GET("/", h.getServersList)
 
-			address := servers.Group("/:address")
+			address := servers.Group(":address")
 			{
-				address.POST("/", h.addServer)
+				address.POST("/", h.addOrUpdateServer)
 
-				session := address.Group("/session")
-				{
-					session.GET(":session", h.getSessionData)
-				}
+				address.GET("/session/:session", h.getSessionData)
 			}
 		}
 	}

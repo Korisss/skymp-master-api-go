@@ -17,6 +17,25 @@ type requestWithAuth struct {
 	Id int `uri:"id" binding:"required"`
 }
 
+func checkUserAccess(ctx *gin.Context) (int, bool) {
+	ctxId, _ := ctx.Get("id")
+	id := ctxId.(int)
+
+	var req requestWithAuth
+
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return id, false
+	}
+
+	if id != req.Id {
+		newErrorResponse(ctx, http.StatusForbidden, "no access to create session for this user")
+		return id, false
+	}
+
+	return id, true
+}
+
 // Returning user name
 func (h *Handler) getUserName(ctx *gin.Context) {
 	id, access := checkUserAccess(ctx)
@@ -88,22 +107,3 @@ func (h *Handler) register(ctx *gin.Context) {
 
 // TODO: create with verification
 func (h *Handler) resetPassword(ctx *gin.Context) {}
-
-func checkUserAccess(ctx *gin.Context) (int, bool) {
-	ctxId, _ := ctx.Get("id")
-	id := ctxId.(int)
-
-	var req requestWithAuth
-
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
-		return id, false
-	}
-
-	if id != req.Id {
-		newErrorResponse(ctx, http.StatusForbidden, "no access to create session for this user")
-		return id, false
-	}
-
-	return id, true
-}

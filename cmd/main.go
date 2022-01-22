@@ -14,6 +14,7 @@ import (
 	"github.com/Korisss/skymp-master-api-go/internal/handler"
 	"github.com/Korisss/skymp-master-api-go/internal/repository"
 	"github.com/Korisss/skymp-master-api-go/internal/service"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
@@ -39,8 +40,12 @@ func main() {
 		logrus.Fatalf("failed to load config: %s", err.Error())
 	}
 
+	if config.Production {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	if err := godotenv.Load(); err != nil {
-		logrus.Fatalf("error loading env variables: %v", err.Error())
+		logrus.Error("error loading env variables: %v", err.Error())
 	}
 
 	db, err := repository.NewPostgresDB(repository.Config{

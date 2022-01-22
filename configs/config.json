@@ -1,11 +1,11 @@
 {
   "port": 3000,
-  "production": false,
+  "production": true,
   "db_config": {
-    "host": "localhost",
+    "host": "abul.db.elephantsql.com",
     "port": "5432",
-    "username": "postgres",
-    "db_name": "postgres",
+    "username": "dmywkgap",
+    "db_name": "dmywkgap",
     "ssl_mode": "disable"
   }
 }

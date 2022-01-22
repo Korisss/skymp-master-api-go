@@ -77,5 +77,5 @@ docker run --name=postgres-db -e POSTGRES_PASSWORD='YOU_DB_PASSWORD' -d -p 5432:
 You need to use Migrate to load schema into DB
 
 ```bash
-migrate -path ./schema -database 'postgres://postgres:12345@localhost/postgres?sslmode=disable' up
+migrate -path ./schema -database 'postgres://postgres:YOU_DB_PASSWORD@localhost/postgres?sslmode=disable' up
 ```

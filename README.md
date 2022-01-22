@@ -1,40 +1,56 @@
-# skymp-master-api-go
+# SkyMP Master API
 
-run docker
+Another SkyMP Master API implementation written on Go. Supports only PostgreSQL databases. Verification methods are not yet provided.
 
-```bash
-docker run --name=skymp-master-api -e POSTGRES_PASSWORD='12345' -d -p 5432:5432 --rm postgres
-```
+## Build
 
-run migrate up
+### Prerequisites
 
-```bash
-migrate -path ./schema -database 'postgres://postgres:12345@localhost/postgres?sslmode=disable' up
-```
+- [Go](https://go.dev/) for build.
+- [Docker](https://www.docker.com/) for build docker image or use local PostgreSQL database.
+- [Migrate](https://github.com/golang-migrate/migrate) to load schema in local PostgreSQL database.
 
-run migrate down
+### Installing dependencies
 
 ```bash
-migrate -path ./schema -database 'postgres://postgres:12345@localhost/postgres?sslmode=disable' down
+go get -d -v ./
 ```
 
-install gin and sqlx
+### Building app
 
-DB_PASSWORD, JWT_SECRET and PASSWORD_SALT in .env
+```bash
+go build -o main ./cmd/
+```
 
-build via docker
+### Run app without build
+
+```bash
+go run ./cmd/
+```
+
+### Build docker image
 
 ```bash
 docker build -t skymp-master-api .
 ```
 
-run via docker
+### Run docker image
 
 ```bash
 docker run --name=master -e DB_PASSWORD="DB_PASSWORD_HERE" -e PASSWORD_SALT="PASSWORD_SALT_HERE" -e JWT_SECRET="JWT_SECRET_HERE" -d -p 3000:3000 --rm skymp-master-api
 ```
 
-config.json file in ./configs/
+## Configuration
+
+App use environment variables and config file.
+
+All environment variables:
+
+- DB_PASSWORD
+- PASSWORD_SALT
+- JWT_SECRET
+
+Config example (configs/config.json)
 
 ```json
 {
@@ -48,4 +64,18 @@ config.json file in ./configs/
     "ssl_mode": "disable"
   }
 }
+```
+
+## Development
+
+During development, you can use local database instance in docker via
+
+```bash
+docker run --name=postgres-db -e POSTGRES_PASSWORD='YOU_DB_PASSWORD' -d -p 5432:5432 --rm postgres
+```
+
+You need to use Migrate to load schema into DB
+
+```bash
+migrate -path ./schema -database 'postgres://postgres:12345@localhost/postgres?sslmode=disable' up
 ```

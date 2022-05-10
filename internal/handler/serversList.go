@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	master_api "github.com/Korisss/skymp-master-api-go"
+	"github.com/Korisss/skymp-master-api-go/internal/domain"
 	"github.com/gin-gonic/gin"
 )
 
-type serversList []master_api.SkyMPServer
+type serversList []domain.SkyMPServer
 
-func (sl *serversList) searchServerInList(ip string, port int) (int, *master_api.SkyMPServer) {
+func (sl *serversList) searchServerInList(ip string, port int) (int, *domain.SkyMPServer) {
 	for i := 0; i < len(*sl); i++ {
 		if (*sl)[i].Ip == ip && (*sl)[i].Port == port {
 			return i, &((*sl)[i])
@@ -73,7 +73,7 @@ func (h *Handler) addOrUpdateServer(ctx *gin.Context) {
 		return
 	}
 
-	server := master_api.NewSkyMPServer(ip, port, request.Name, request.MaxPlayers, request.Online)
+	server := domain.NewSkyMPServer(ip, port, request.Name, request.MaxPlayers, request.Online)
 
 	servers = append(servers, server)
 

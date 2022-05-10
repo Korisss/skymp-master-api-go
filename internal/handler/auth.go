@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/mail"
 
-	master_api "github.com/Korisss/skymp-master-api-go"
+	"github.com/Korisss/skymp-master-api-go/internal/domain"
 	"github.com/gin-gonic/gin"
 )
 
@@ -75,7 +75,7 @@ func (h *Handler) login(ctx *gin.Context) {
 }
 
 func (h *Handler) register(ctx *gin.Context) {
-	var req master_api.User
+	var req domain.User
 
 	if err := ctx.BindJSON(&req); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err.Error())

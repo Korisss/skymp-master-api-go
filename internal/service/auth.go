@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	master_api "github.com/Korisss/skymp-master-api-go"
+	"github.com/Korisss/skymp-master-api-go/internal/domain"
 	"github.com/Korisss/skymp-master-api-go/internal/repository"
 	"github.com/dgrijalva/jwt-go"
 )
@@ -30,7 +30,7 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 	return &AuthService{repo: repo}
 }
 
-func (s *AuthService) CreateUser(user master_api.User) (int, error) {
+func (s *AuthService) CreateUser(user domain.User) (int, error) {
 	user.Password = generatePasswordHash(user.Password, salt)
 	return s.repo.CreateUser(user)
 }

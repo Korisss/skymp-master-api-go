@@ -1,4 +1,4 @@
-package master_api
+package domain
 
 import (
 	"context"

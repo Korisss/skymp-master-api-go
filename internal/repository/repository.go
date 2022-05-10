@@ -1,13 +1,14 @@
 package repository
 
 import (
-	master_api "github.com/Korisss/skymp-master-api-go"
+	"github.com/Korisss/skymp-master-api-go/internal/domain"
+	"github.com/Korisss/skymp-master-api-go/internal/repository/psql"
 	"github.com/jmoiron/sqlx"
 )
 
 type Authorization interface {
-	CreateUser(user master_api.User) (int, error)
-	GetUser(email, password string) (master_api.User, error)
+	CreateUser(user domain.User) (int, error)
+	GetUser(email, password string) (domain.User, error)
 	GetUserName(id int) (string, error)
 }
 
@@ -17,6 +18,6 @@ type Repository struct {
 
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
-		Authorization: NewAuthPostgres(db),
+		Authorization: psql.NewAuthPostgres(db),
 	}
 }

@@ -10,9 +10,10 @@ import (
 	"strconv"
 	"syscall"
 
-	master_api "github.com/Korisss/skymp-master-api-go"
+	"github.com/Korisss/skymp-master-api-go/internal/domain"
 	"github.com/Korisss/skymp-master-api-go/internal/handler"
 	"github.com/Korisss/skymp-master-api-go/internal/repository"
+	"github.com/Korisss/skymp-master-api-go/internal/repository/psql"
 	"github.com/Korisss/skymp-master-api-go/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -48,7 +49,7 @@ func main() {
 		logrus.Error("error loading env variables: %v", err.Error())
 	}
 
-	db, err := repository.NewPostgresDB(repository.Config{
+	db, err := psql.NewPostgresDB(psql.Config{
 		Host:     config.DBConfig.Host,
 		Port:     config.DBConfig.Port,
 		Username: config.DBConfig.Username,
@@ -64,7 +65,7 @@ func main() {
 	services := service.NewService(repository)
 	handlers := handler.NewHandler(services)
 
-	server := new(master_api.Server)
+	server := new(domain.Server)
 
 	go func() {
 		if err := server.Run(strconv.Itoa(config.Port), handlers.InitRoutes()); err != nil {

@@ -1,4 +1,4 @@
-package master_api
+package domain
 
 type User struct {
 	Id             int    `json:"-" db:"id"`

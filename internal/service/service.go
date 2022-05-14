@@ -6,10 +6,10 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user domain.User) (int, error)
-	GenerateToken(email, password string) (int, string, error)
-	ParseToken(token string) (int, error)
-	GetUserName(id int) (string, error)
+	CreateUser(user domain.User) (string, error)
+	GenerateToken(email, password string) (string, string, error)
+	ParseToken(token string) (string, error)
+	GetUserName(id string) (string, error)
 }
 
 type Service struct {

@@ -14,12 +14,12 @@ type loginRequest struct {
 }
 
 type requestWithAuth struct {
-	Id int `uri:"id" binding:"required"`
+	Id string `uri:"id" binding:"required"`
 }
 
-func checkUserAccess(ctx *gin.Context) (int, bool) {
+func checkUserAccess(ctx *gin.Context) (string, bool) {
 	ctxId, _ := ctx.Get("id")
-	id := ctxId.(int)
+	id := ctxId.(string)
 
 	var req requestWithAuth
 

@@ -13,7 +13,7 @@ import (
 	"github.com/Korisss/skymp-master-api-go/internal/domain"
 	"github.com/Korisss/skymp-master-api-go/internal/handler"
 	"github.com/Korisss/skymp-master-api-go/internal/repository"
-	"github.com/Korisss/skymp-master-api-go/internal/repository/psql"
+	"github.com/Korisss/skymp-master-api-go/internal/repository/mongo"
 	"github.com/Korisss/skymp-master-api-go/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -24,13 +24,6 @@ import (
 type Config struct {
 	Port       int  `json:"port"`
 	Production bool `json:"production"`
-	DBConfig   struct {
-		Host     string `json:"host"`
-		Port     string `json:"port"`
-		Username string `json:"username"`
-		DBName   string `json:"db_name"`
-		SSLMode  string `json:"ssl_mode"`
-	} `json:"db_config"`
 }
 
 func main() {
@@ -49,14 +42,9 @@ func main() {
 		logrus.Error("error loading env variables: %v", err.Error())
 	}
 
-	db, err := psql.NewPostgresDB(psql.Config{
-		Host:     config.DBConfig.Host,
-		Port:     config.DBConfig.Port,
-		Username: config.DBConfig.Username,
-		DBName:   config.DBConfig.DBName,
-		SSLMode:  config.DBConfig.SSLMode,
-		Password: os.Getenv("DB_PASSWORD"),
-	})
+	mongoUri := os.Getenv("MONGO_URI")
+
+	db, err := mongo.NewMongoDB(mongoUri)
 	if err != nil {
 		logrus.Fatalf("failed to init db: %s", err.Error())
 	}
@@ -85,7 +73,7 @@ func main() {
 		logrus.Error("error occured on server shutting down: %s", err.Error())
 	}
 
-	if err := db.Close(); err != nil {
+	if err := db.Disconnect(context.Background()); err != nil {
 		logrus.Error("error occured on db connection close: %s", err.Error())
 	}
 }

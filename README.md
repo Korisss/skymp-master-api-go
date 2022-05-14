@@ -1,14 +1,13 @@
 # SkyMP Master API
 
-Another SkyMP Master API implementation written on Go. Supports only PostgreSQL databases. Verification methods are not yet provided.
+Red House SkyMP Master API implementation written on Go. Supports only MongoDB databases. Verification methods are not yet provided.
 
 ## Build
 
 ### Prerequisites
 
 - [Go](https://go.dev/) for build.
-- [Docker](https://www.docker.com/) for build docker image or use local PostgreSQL database.
-- [Migrate](https://github.com/golang-migrate/migrate) to load schema in local PostgreSQL database.
+- [Docker](https://www.docker.com/) for use local MongoDB database.
 
 ### Installing dependencies
 
@@ -19,25 +18,13 @@ go get -d -v ./
 ### Building app
 
 ```bash
-go build -o main ./cmd/
+go build -o main ./cmd/app/main.go
 ```
 
 ### Run app without build
 
 ```bash
-go run ./cmd/
-```
-
-### Build docker image
-
-```bash
-docker build -t skymp-master-api .
-```
-
-### Run docker image
-
-```bash
-docker run --name=master -e DB_PASSWORD="DB_PASSWORD_HERE" -e PASSWORD_SALT="PASSWORD_SALT_HERE" -e JWT_SECRET="JWT_SECRET_HERE" -d -p 3000:3000 --rm skymp-master-api
+go run ./cmd/app/main.go
 ```
 
 ## Configuration
@@ -46,7 +33,7 @@ App use environment variables and config file.
 
 All environment variables:
 
-- DB_PASSWORD
+- MONGO_URI
 - PASSWORD_SALT
 - JWT_SECRET
 
@@ -55,27 +42,14 @@ Config example (configs/config.json)
 ```json
 {
   "port": 3000,
-  "production": false,
-  "db_config": {
-    "host": "localhost",
-    "port": "5432",
-    "username": "postgres",
-    "db_name": "postgres",
-    "ssl_mode": "disable"
-  }
+  "production": true
 }
 ```
 
 ## Development
 
-During development, you can use local database instance in docker via
+During development, you can use local database instance in docker via:
 
 ```bash
-docker run --name=postgres-db -e POSTGRES_PASSWORD='YOU_DB_PASSWORD' -d -p 5432:5432 --rm postgres
-```
-
-You need to use Migrate or other tool to load schema into DB
-
-```bash
-migrate -path ./schema -database 'postgres://postgres:YOU_DB_PASSWORD@localhost/postgres?sslmode=disable' up
+docker run --name mongodb -d -p 27017:27017 mongo
 ```

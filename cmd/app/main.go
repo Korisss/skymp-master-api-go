@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"syscall"
 
-	"github.com/Korisss/skymp-master-api-go/internal/domain"
-	"github.com/Korisss/skymp-master-api-go/internal/handler"
 	"github.com/Korisss/skymp-master-api-go/internal/repository"
 	"github.com/Korisss/skymp-master-api-go/internal/repository/mongo"
 	"github.com/Korisss/skymp-master-api-go/internal/service"
+	"github.com/Korisss/skymp-master-api-go/internal/transport"
+	"github.com/Korisss/skymp-master-api-go/internal/transport/handler"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -51,7 +51,7 @@ func main() {
 	services := service.NewService(repository)
 	handlers := handler.NewHandler(services)
 
-	server := new(domain.Server)
+	server := new(transport.Server)
 
 	go func() {
 		if err := server.Run(strconv.Itoa(config.Port), handlers.InitRoutes()); err != nil && err != http.ErrServerClosed {

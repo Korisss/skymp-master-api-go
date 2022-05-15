@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
@@ -22,12 +21,17 @@ import (
 )
 
 type Config struct {
-	Port       int  `json:"port"`
-	Production bool `json:"production"`
+	Port       int
+	Production bool
+	MongoUri   string
 }
 
 func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
+
+	if err := godotenv.Load(); err != nil {
+		logrus.Error("error loading env variables from .env: %v", err.Error())
+	}
 
 	config, err := loadConfig()
 	if err != nil {
@@ -38,13 +42,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	if err := godotenv.Load(); err != nil {
-		logrus.Error("error loading env variables: %v", err.Error())
-	}
-
-	mongoUri := os.Getenv("MONGO_URI")
-
-	db, err := mongo.NewMongoDB(mongoUri)
+	db, err := mongo.NewMongoDB(config.MongoUri)
 	if err != nil {
 		logrus.Fatalf("failed to init db: %s", err.Error())
 	}
@@ -56,7 +54,7 @@ func main() {
 	server := new(domain.Server)
 
 	go func() {
-		if err := server.Run(strconv.Itoa(config.Port), handlers.InitRoutes()); err != nil {
+		if err := server.Run(strconv.Itoa(config.Port), handlers.InitRoutes()); err != nil && err != http.ErrServerClosed {
 			logrus.Fatalf("Error occured while running http server: %s", err.Error())
 		}
 	}()
@@ -79,18 +77,26 @@ func main() {
 }
 
 func loadConfig() (*Config, error) {
-	buffer, err := ioutil.ReadFile("configs/config.json")
+	config := new(Config)
 
+	port, err := strconv.ParseInt(os.Getenv("PORT"), 10, 32)
 	if err != nil {
 		return nil, err
 	}
 
-	config := new(Config)
-	json.Unmarshal(buffer, config)
+	config.Port = int(port)
 
 	if config.Port > 65535 || config.Port < 0 {
 		return nil, errors.New("port is too big")
 	}
+
+	production, err := strconv.ParseBool(os.Getenv("PRODUCTION"))
+	if err != nil {
+		return nil, err
+	}
+
+	config.Production = production
+	config.MongoUri = os.Getenv("MONGO_URI")
 
 	return config, nil
 }

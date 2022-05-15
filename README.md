@@ -33,18 +33,11 @@ App use environment variables and config file.
 
 All environment variables:
 
-- MONGO_URI
-- PASSWORD_SALT
-- JWT_SECRET
-
-Config example (configs/config.json)
-
-```json
-{
-  "port": 3000,
-  "production": true
-}
-```
+- MONGO_URI - string
+- PASSWORD_SALT - string
+- JWT_SECRET - string
+- PORT - uint16 (0 < port < 65535)
+- PRODUCTION - bool
 
 ## Development
 

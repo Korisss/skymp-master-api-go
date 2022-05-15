@@ -29,12 +29,6 @@ func (r *AuthMongo) CreateUser(user domain.User) (string, error) {
 
 	insertResult, err := r.db.Database("db").Collection("users").InsertOne(ctx, user)
 
-	// bson.D{
-	// 	{Key: "name", Value: user.Name},
-	// 	{Key: "email", Value: user.Email},
-	// 	{Key: "password", Value: user.Password},
-	// }
-
 	if err != nil {
 		return "", err
 	}

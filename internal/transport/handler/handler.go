@@ -23,6 +23,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			users.POST("/", h.register)
 			users.POST("/login", h.login)
 			users.POST("/reset-password", h.resetPassword)
+			users.GET("/verify", h.sendVerificationCode)
+			users.POST("/verify", h.verify)
 
 			id := users.Group(":id", h.userIdentity)
 			{
@@ -46,8 +48,3 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	return router
 }
-
-// Currently not supported
-//       .post("/users/:id/verify", UserController.verify)
-//       .post("/users/:id/reset-pin", UserController.resetPin)
-//       .get("/enduser-verify/:email/:pin", UserController.verifyEnduser)

@@ -7,13 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	authorizationHeader = "Authorization"
-	userCtx             = "id"
-)
-
 func (h *Handler) userIdentity(ctx *gin.Context) {
-	header := ctx.GetHeader(authorizationHeader)
+	header := ctx.GetHeader("Authorization")
 	if header == "" {
 		newErrorResponse(ctx, http.StatusUnauthorized, "empty auth header")
 		return
@@ -30,5 +25,5 @@ func (h *Handler) userIdentity(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Set(userCtx, userId)
+	ctx.Set("id", userId)
 }

@@ -40,6 +40,7 @@ func checkUserAccess(ctx *gin.Context) (string, bool) {
 func (h *Handler) getUserName(ctx *gin.Context) {
 	id, access := checkUserAccess(ctx)
 	if !access {
+		newErrorResponse(ctx, http.StatusUnauthorized, "no access")
 		return
 	}
 

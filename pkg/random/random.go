@@ -18,3 +18,8 @@ func RandString(length int) string {
 
 	return string(b)
 }
+
+func RandInt(length int) int {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Intn(length)
+}

@@ -12,12 +12,19 @@ type Authorization interface {
 	GetUserName(id string) (string, error)
 }
 
+type Verification interface {
+	SetVerificationCode(id string, code int) error
+	GetVerificationCode(id string) (int, error)
+}
+
 type Service struct {
 	Authorization
+	Verification
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		Verification:  NewVerificationService(repos.Verification),
 	}
 }

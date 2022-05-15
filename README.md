@@ -38,6 +38,8 @@ All environment variables:
 - JWT_SECRET - string
 - PORT - uint16 (0 < port < 65535)
 - PRODUCTION - bool
+- BOT_TOKEN - string
+- BOT_URI - string
 
 ## Development
 

@@ -12,12 +12,19 @@ type Authorization interface {
 	GetUserName(id string) (string, error)
 }
 
+type Verification interface {
+	SetVerificationCode(id string, code int) error
+	GetVerificationCode(id string) (int, error)
+}
+
 type Repository struct {
 	Authorization
+	Verification
 }
 
 func NewRepository(db *mongodb.Client) *Repository {
 	return &Repository{
 		Authorization: mongo.NewAuthMongo(db),
+		Verification:  mongo.NewVerificationMongo(db),
 	}
 }

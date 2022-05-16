@@ -49,12 +49,25 @@ During development, you can use local database instance in docker via:
 docker run --name mongodb -d -p 27017:27017 mongo
 ```
 
-## Mock generation
+## Tests
 
-Install GoMock
-
-Run:
+Run tests:
 
 ```bash
-mockgen -source="./internal/repository/repository.go" -destination="./mocks/internal/repository/repository.go"
+go test ./...
+```
+
+### Mock generation
+
+Install GoMock:
+
+```bash
+go install github.com/golang/mock/mockgen@v1.6.0
+```
+
+
+Generate:
+
+```bash
+mockgen -source="./internal/service/service.go" -destination="./internal/service/mocks/mock.go"
 ```

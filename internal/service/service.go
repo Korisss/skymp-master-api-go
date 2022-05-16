@@ -13,8 +13,8 @@ type Authorization interface {
 }
 
 type Verification interface {
-	SetVerificationCode(id string, code int) error
 	GetVerificationCode(id string) (int, error)
+	SendCodeToBot(id string, discord string) error
 }
 
 type Service struct {

@@ -17,6 +17,21 @@ func NewVerificationMongo(db *mongo.Client) *VerificationMongo {
 	return &VerificationMongo{db: db}
 }
 
+func (r *VerificationMongo) SetDiscord(id string, discord string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	update := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "discord", Value: discord},
+		}},
+	}
+
+	_, err := r.db.Database("db").Collection("users").UpdateByID(ctx, id, update)
+
+	return err
+}
+
 func (r *VerificationMongo) SetVerificationCode(id string, code int) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()

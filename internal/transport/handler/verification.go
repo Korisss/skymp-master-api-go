@@ -1,20 +1,10 @@
 package handler
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/Korisss/skymp-master-api-go/pkg/random"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
-
-var botToken = os.Getenv("BOT_TOKEN")
-var botUri = os.Getenv("BOT_TOKEN")
 
 type verify struct {
 	Code int `json:"code" binding:"required"`
@@ -22,11 +12,6 @@ type verify struct {
 
 type sendVerificationCodeReq struct {
 	Discord string `json:"discord" binding:"required"`
-}
-
-type sendCodeToBotReq struct {
-	Discord string `json:"discord"`
-	Code    int    `json:"code"`
 }
 
 func (h *Handler) sendVerificationCode(ctx *gin.Context) {
@@ -43,51 +28,12 @@ func (h *Handler) sendVerificationCode(ctx *gin.Context) {
 		return
 	}
 
-	code := random.RandInt(4)
+	err := h.services.SendCodeToBot(id, req.Discord)
 
-	h.services.SetVerificationCode(id, code)
-
-	if err := sendCodeToBot(req.Discord, code); err != nil {
+	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
-}
-
-func sendCodeToBot(discord string, code int) error {
-	body, err := json.Marshal(sendCodeToBotReq{
-		Discord: discord,
-		Code:    code,
-	})
-	if err != nil {
-		logrus.Error("Error reading request. ", err.Error())
-	}
-
-	req, err := http.NewRequest("POST", "http://"+botUri+"/send-code", bytes.NewBuffer(body))
-	if err != nil {
-		logrus.Error("Error reading request. ", err.Error())
-	}
-
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Host", botUri)
-	req.Header.Set("Authorization", botToken)
-
-	client := &http.Client{Timeout: time.Second * 10}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		logrus.Error("Error reading response. ", err.Error())
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusUnauthorized {
-		logrus.Fatal("Bot token is invalid")
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return errors.New("status is not ok")
-	}
-
-	return nil
 }
 
 func (h *Handler) verify(ctx *gin.Context) {

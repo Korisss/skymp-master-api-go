@@ -13,6 +13,7 @@ type Authorization interface {
 }
 
 type Verification interface {
+	SetDiscord(id string, discord string) error
 	SetVerificationCode(id string, code int) error
 	GetVerificationCode(id string) (int, error)
 }

@@ -88,7 +88,7 @@ func (s *VerificationService) SendCodeToBot(id string, discord string) error {
 
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		return errors.New("can't read body")
+		return errors.New("error when reading body")
 	}
 
 	s.repo.SetDiscord(id, res.DiscordId)

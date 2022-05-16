@@ -30,7 +30,7 @@ func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 
 	if err := godotenv.Load(); err != nil {
-		logrus.Error("error loading env variables from .env: %v", err.Error())
+		logrus.Errorf("error loading env variables from .env: %v", err.Error())
 	}
 
 	config, err := loadConfig()
@@ -68,11 +68,11 @@ func main() {
 	logrus.Print("SkyMP Master Server shutting down...")
 
 	if err := server.Shutdown(context.Background()); err != nil {
-		logrus.Error("error occured on server shutting down: %s", err.Error())
+		logrus.Errorf("error occured on server shutting down: %s", err.Error())
 	}
 
 	if err := db.Disconnect(context.Background()); err != nil {
-		logrus.Error("error occured on db connection close: %s", err.Error())
+		logrus.Errorf("error occured on db connection close: %s", err.Error())
 	}
 }
 

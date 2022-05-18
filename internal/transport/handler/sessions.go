@@ -15,16 +15,16 @@ type playerSession struct {
 	Session string `uri:"session" binding:"required"`
 }
 
-var sessionsStorage = make(map[int]playerSession)
+var sessionsStorage = make(map[string]playerSession)
 
-func findUserInSessionsStorage(session playerSession) int {
-	for i, s := range sessionsStorage {
+func findUserInSessionsStorage(session playerSession) string {
+	for key, s := range sessionsStorage {
 		if s == session {
-			return i
+			return key
 		}
 	}
 
-	return 0
+	return ""
 }
 
 // TODO: check id with token match
@@ -35,7 +35,7 @@ func (h *Handler) createSession(ctx *gin.Context) {
 	}
 
 	var req struct {
-		Id      int    `uri:"id" binding:"required"`
+		Id      string `uri:"id" binding:"required"`
 		Address string `uri:"serverAddress" binding:"required"`
 	}
 
@@ -79,7 +79,7 @@ func (h *Handler) getSessionData(ctx *gin.Context) {
 	}
 
 	userId := findUserInSessionsStorage(req)
-	if userId == 0 {
+	if userId == "" {
 		newErrorResponse(ctx, http.StatusNotFound, "user not found")
 		return
 	}

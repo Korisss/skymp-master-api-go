@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/Korisss/skymp-master-api-go/internal/domain"
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -54,11 +55,14 @@ func (r *AuthMongo) GetUserName(id string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		logrus.Errorln("Invalid id")
+	}
+
 	var user domain.User
 
-	err := r.db.Database("db").Collection("users").FindOne(ctx, bson.D{
-		{Key: "_id", Value: id},
-	}).Decode(&user)
+	err = r.db.Database("db").Collection("users").FindOne(ctx, bson.M{"_id": objectId}).Decode(&user)
 
 	return user.Name, err
 }

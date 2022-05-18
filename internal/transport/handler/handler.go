@@ -26,10 +26,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			users.GET("/verify", h.sendVerificationCode)
 			users.POST("/verify", h.verify)
 
-			id := users.Group(":id", h.userIdentity)
+			id := users.Group(":id")
 			{
 				id.GET("/", h.getUserName)
-				id.POST("/play/:serverAddress", h.createSession)
+				id.POST("/play/:serverAddress", h.userIdentity, h.createSession)
 			}
 		}
 

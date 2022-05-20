@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"net/mail"
+	"strconv"
 
 	"github.com/Korisss/skymp-master-api-go/internal/domain"
 	"github.com/gin-gonic/gin"
@@ -13,22 +14,28 @@ type loginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type requestWithAuth struct {
+type requestWithId struct {
 	Id string `uri:"id" binding:"required"`
 }
 
-func checkUserAccess(ctx *gin.Context) (string, bool) {
+func checkUserAccess(ctx *gin.Context) (int64, bool) {
 	ctxId, _ := ctx.Get("id")
-	id := ctxId.(string)
+	id := ctxId.(int64)
 
-	var req requestWithAuth
+	var req requestWithId
 
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return id, false
 	}
 
-	if id != req.Id {
+	reqId, err := strconv.Atoi(req.Id)
+	if err != nil {
+		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return id, false
+	}
+
+	if id != int64(reqId) {
 		newErrorResponse(ctx, http.StatusForbidden, "no access to create session for this user")
 		return id, false
 	}
@@ -38,14 +45,20 @@ func checkUserAccess(ctx *gin.Context) (string, bool) {
 
 // Returning user name
 func (h *Handler) getUserName(ctx *gin.Context) {
-	var req requestWithAuth
+	var req requestWithId
 
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	name, err := h.services.GetUserName(req.Id)
+	reqId, err := strconv.Atoi(req.Id)
+	if err != nil {
+		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	name, err := h.services.GetUserName(int64(reqId))
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return

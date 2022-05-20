@@ -34,11 +34,11 @@ func NewVerificationService(repo repository.Verification) *VerificationService {
 	return &VerificationService{repo: repo}
 }
 
-func (s *VerificationService) GetVerificationCode(id string) (int, error) {
+func (s *VerificationService) GetVerificationCode(id int64) (int, error) {
 	return s.repo.GetVerificationCode(id)
 }
 
-func (s *VerificationService) SendCodeToBot(id string, discord string) error {
+func (s *VerificationService) SendCodeToBot(id int64, discord string) error {
 	code := random.RandInt(4)
 
 	if err := s.repo.SetVerificationCode(id, code); err != nil {

@@ -6,9 +6,7 @@ import (
 	"time"
 
 	"github.com/Korisss/skymp-master-api-go/internal/domain"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -20,21 +18,26 @@ func NewAuthMongo(db *mongo.Client) *AuthMongo {
 	return &AuthMongo{db: db}
 }
 
-func (r *AuthMongo) CreateUser(user domain.User) (string, error) {
+func (r *AuthMongo) CreateUser(user domain.User) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if r.db.Database("db").Collection("users").FindOne(ctx, bson.D{{Key: "email", Value: user.Email}}).Err() == nil {
-		return "", errors.New("user already registered")
+		return -1, errors.New("user already registered")
 	}
 
-	insertResult, err := r.db.Database("db").Collection("users").InsertOne(ctx, user)
-
+	id, err := r.db.Database("db").Collection("users").CountDocuments(ctx, bson.M{})
 	if err != nil {
-		return "", err
+		return -1, err
 	}
 
-	return insertResult.InsertedID.(primitive.ObjectID).Hex(), nil
+	user.Id = id + 1
+	_, err = r.db.Database("db").Collection("users").InsertOne(ctx, user)
+	if err != nil {
+		return -1, err
+	}
+
+	return user.Id, nil
 }
 
 func (r *AuthMongo) GetUser(email, password string) (domain.User, error) {
@@ -51,18 +54,13 @@ func (r *AuthMongo) GetUser(email, password string) (domain.User, error) {
 	return user, err
 }
 
-func (r *AuthMongo) GetUserName(id string) (string, error) {
+func (r *AuthMongo) GetUserName(id int64) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		logrus.Errorln("Invalid id")
-	}
-
 	var user domain.User
 
-	err = r.db.Database("db").Collection("users").FindOne(ctx, bson.M{"_id": objectId}).Decode(&user)
+	err := r.db.Database("db").Collection("users").FindOne(ctx, bson.M{"id": id}).Decode(&user)
 
 	return user.Name, err
 }

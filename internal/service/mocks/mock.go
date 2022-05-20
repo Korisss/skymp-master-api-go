@@ -35,10 +35,10 @@ func (m *MockAuthorization) EXPECT() *MockAuthorizationMockRecorder {
 }
 
 // CreateUser mocks base method.
-func (m *MockAuthorization) CreateUser(user domain.User) (string, error) {
+func (m *MockAuthorization) CreateUser(user domain.User) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", user)
-	ret0, _ := ret[0].(string)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,10 +50,10 @@ func (mr *MockAuthorizationMockRecorder) CreateUser(user interface{}) *gomock.Ca
 }
 
 // GenerateToken mocks base method.
-func (m *MockAuthorization) GenerateToken(email, password string) (string, string, error) {
+func (m *MockAuthorization) GenerateToken(email, password string) (int64, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateToken", email, password)
-	ret0, _ := ret[0].(string)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(string)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -66,7 +66,7 @@ func (mr *MockAuthorizationMockRecorder) GenerateToken(email, password interface
 }
 
 // GetUserName mocks base method.
-func (m *MockAuthorization) GetUserName(id string) (string, error) {
+func (m *MockAuthorization) GetUserName(id int64) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUserName", id)
 	ret0, _ := ret[0].(string)
@@ -81,10 +81,10 @@ func (mr *MockAuthorizationMockRecorder) GetUserName(id interface{}) *gomock.Cal
 }
 
 // ParseToken mocks base method.
-func (m *MockAuthorization) ParseToken(token string) (string, error) {
+func (m *MockAuthorization) ParseToken(token string) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ParseToken", token)
-	ret0, _ := ret[0].(string)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -119,7 +119,7 @@ func (m *MockVerification) EXPECT() *MockVerificationMockRecorder {
 }
 
 // GetVerificationCode mocks base method.
-func (m *MockVerification) GetVerificationCode(id string) (int, error) {
+func (m *MockVerification) GetVerificationCode(id int64) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetVerificationCode", id)
 	ret0, _ := ret[0].(int)
@@ -134,7 +134,7 @@ func (mr *MockVerificationMockRecorder) GetVerificationCode(id interface{}) *gom
 }
 
 // SendCodeToBot mocks base method.
-func (m *MockVerification) SendCodeToBot(id, discord string) error {
+func (m *MockVerification) SendCodeToBot(id int64, discord string) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendCodeToBot", id, discord)
 	ret0, _ := ret[0].(error)

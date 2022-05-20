@@ -40,10 +40,10 @@ func TestHandler_register(t *testing.T) {
 				Password: "123456789",
 			},
 			mockBehavior: func(r *mock_service.MockAuthorization, user domain.User) {
-				r.EXPECT().CreateUser(user).Return("1", nil)
+				r.EXPECT().CreateUser(user).Return(int64(1), nil)
 			},
 			expectedStatusCode:   http.StatusOK,
-			expectedResponseBody: `{"id":"1"}`,
+			expectedResponseBody: `{"id":1}`,
 		},
 		{
 			name: "Invalid request",
@@ -93,7 +93,7 @@ func TestHandler_register(t *testing.T) {
 				Password: "123456789",
 			},
 			mockBehavior: func(r *mock_service.MockAuthorization, user domain.User) {
-				r.EXPECT().CreateUser(user).Return("0", errors.New("something went wrong"))
+				r.EXPECT().CreateUser(user).Return(int64(-1), errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"something went wrong"}`,
@@ -125,7 +125,7 @@ func TestHandler_register(t *testing.T) {
 
 			// Assert
 			assert.Equal(t, w.Code, test.expectedStatusCode)
-			assert.Equal(t, w.Body.String(), test.expectedResponseBody)
+			assert.Equal(t, test.expectedResponseBody, w.Body.String())
 		})
 	}
 }

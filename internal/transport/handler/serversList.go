@@ -11,6 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var servers = make(serversList, 0)
+
 type serversList []domain.SkyMPServer
 
 func (sl *serversList) searchServerInList(ip string, port int) (int, *domain.SkyMPServer) {
@@ -36,8 +38,6 @@ func (sl *serversList) checkServerTimeout(ip string, port int) {
 	}
 }
 
-var servers serversList = make(serversList, 0)
-
 func (h *Handler) addOrUpdateServer(ctx *gin.Context) {
 	var req struct {
 		Address string `uri:"address" binding:"required"`
@@ -57,19 +57,20 @@ func (h *Handler) addOrUpdateServer(ctx *gin.Context) {
 		return
 	}
 
-	if _, serverInList := servers.searchServerInList(ip, port); serverInList != nil {
-		serverInList.UpdatedAt = time.Now()
-		return
-	}
-
 	var request struct {
 		Name       string `json:"name" binding:"required"`
 		MaxPlayers int    `json:"maxPlayers" binding:"required"`
-		Online     int    `json:"online"` // TODO: use binding:"required"
+		Online     int    `json:"online"` // binding:"required"
 	}
 
 	if err := ctx.BindJSON(&request); err != nil {
 		newErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if _, serverInList := servers.searchServerInList(ip, port); serverInList != nil {
+		serverInList.UpdatedAt = time.Now()
+		serverInList.Online = request.Online
 		return
 	}
 

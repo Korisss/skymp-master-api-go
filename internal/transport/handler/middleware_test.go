@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	"github.com/Korisss/skymp-master-api-go/internal/service"
@@ -30,7 +31,7 @@ func TestHandler_userIdentity(t *testing.T) {
 			headerValue: "Bearer token",
 			token:       "token",
 			mockBehavior: func(r *mock_service.MockAuthorization, token string) {
-				r.EXPECT().ParseToken(token).Return("1", nil)
+				r.EXPECT().ParseToken(token).Return(int64(1), nil)
 			},
 			expectedStatusCode:   200,
 			expectedResponseBody: "1",
@@ -68,7 +69,7 @@ func TestHandler_userIdentity(t *testing.T) {
 			headerValue: "Bearer token",
 			token:       "token",
 			mockBehavior: func(r *mock_service.MockAuthorization, token string) {
-				r.EXPECT().ParseToken(token).Return("0", errors.New("invalid token"))
+				r.EXPECT().ParseToken(token).Return(int64(-1), errors.New("invalid token"))
 			},
 			expectedStatusCode:   401,
 			expectedResponseBody: `{"message":"invalid token"}`,
@@ -90,7 +91,7 @@ func TestHandler_userIdentity(t *testing.T) {
 			r := gin.New()
 			r.GET("/identity", handler.userIdentity, func(ctx *gin.Context) {
 				id, _ := ctx.Get("id")
-				ctx.String(200, "%s", id)
+				ctx.String(200, "%s", strconv.Itoa(int(id.(int64))))
 			})
 
 			// Init Test Request
@@ -102,7 +103,7 @@ func TestHandler_userIdentity(t *testing.T) {
 
 			// Asserts
 			assert.Equal(t, w.Code, test.expectedStatusCode)
-			assert.Equal(t, w.Body.String(), test.expectedResponseBody)
+			assert.Equal(t, test.expectedResponseBody, w.Body.String())
 		})
 	}
 }

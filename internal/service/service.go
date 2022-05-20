@@ -6,15 +6,15 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user domain.User) (string, error)
-	GenerateToken(email, password string) (string, string, error)
-	ParseToken(token string) (string, error)
-	GetUserName(id string) (string, error)
+	CreateUser(user domain.User) (int64, error)
+	GenerateToken(email, password string) (int64, string, error)
+	ParseToken(token string) (int64, error)
+	GetUserName(id int64) (string, error)
 }
 
 type Verification interface {
-	GetVerificationCode(id string) (int, error)
-	SendCodeToBot(id string, discord string) error
+	GetVerificationCode(id int64) (int, error)
+	SendCodeToBot(id int64, discord string) error
 }
 
 type Service struct {

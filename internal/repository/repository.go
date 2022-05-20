@@ -7,15 +7,15 @@ import (
 )
 
 type Authorization interface {
-	CreateUser(user domain.User) (string, error)
+	CreateUser(user domain.User) (int64, error)
 	GetUser(email, password string) (domain.User, error)
-	GetUserName(id string) (string, error)
+	GetUserName(id int64) (string, error)
 }
 
 type Verification interface {
-	SetDiscord(id string, discord string) error
-	SetVerificationCode(id string, code int) error
-	GetVerificationCode(id string) (int, error)
+	SetDiscord(id int64, discord string) error
+	SetVerificationCode(id int64, code int) error
+	GetVerificationCode(id int64) (int, error)
 }
 
 type Repository struct {

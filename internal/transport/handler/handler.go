@@ -23,8 +23,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			users.POST("/", h.register)
 			users.POST("/login", h.login)
 			users.POST("/reset-password", h.resetPassword)
-			users.GET("/verify", h.sendVerificationCode)
-			users.POST("/verify", h.verify)
+			// users.GET("/verify", h.sendVerificationCode)
+			// users.POST("/verify", h.verify)
 
 			id := users.Group("/:id")
 			{

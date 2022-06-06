@@ -19,12 +19,12 @@ type Verification interface {
 
 type Service struct {
 	Authorization
-	Verification
+	// Verification
 }
 
 func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
-		Verification:  NewVerificationService(repos.Verification),
+		// Verification:  NewVerificationService(repos.Verification),
 	}
 }

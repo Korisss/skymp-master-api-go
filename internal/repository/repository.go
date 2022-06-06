@@ -20,12 +20,12 @@ type Verification interface {
 
 type Repository struct {
 	Authorization
-	Verification
+	// Verification
 }
 
 func NewRepository(db *mongodb.Client) *Repository {
 	return &Repository{
 		Authorization: mongo.NewAuthMongo(db),
-		Verification:  mongo.NewVerificationMongo(db),
+		// Verification:  mongo.NewVerificationMongo(db),
 	}
 }
